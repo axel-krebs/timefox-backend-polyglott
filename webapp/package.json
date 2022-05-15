@@ -1,27 +1,73 @@
 {
-  "name": "timefox-app",
-  "version": "0.1.0",
-  "private": true,
+  "name": "@akrebs/time-tracker",
+  "version": "0.2.0-dev.9",
+  "description": "Experimental Project: Tracking start and end of working time.",
   "dependencies": {
-    "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.1.1",
-    "@testing-library/user-event": "^13.5.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "material-components-web": "^7.0.0",
+    "material-design-icons": "latest",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.10.3",
+    "@babel/plugin-transform-runtime": "^7.10.3",
+    "@babel/preset-env": "^7.10.3",
+    "@babel/preset-react": "^7.10.1",
+    "@babel/preset-typescript": "^7.10.1",
+    "@enbock/application-router": "^2.0.0",
+    "@enbock/simple-storage": "^2.0.0",
+    "@enbock/state-value-observer": "^2.0.0",
+    "@testing-library/jest-dom": "^5.11.0",
+    "@testing-library/react": "^10.4.3",
+    "@types/jest": "26.0.3",
+    "@types/react": "^16.9.41",
+    "@types/react-dom": "^16.9.8",
+    "jest": "^26.1.0",
+    "typescript": "^3.9.5",
+    "utf-8-validate": "^5.0.2",
+    "react-scripts": "^5.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "winDevServer": "powershell.exe -Command bash ./scripts/copyFiles.sh develop; cd build; npx http-server",
+    "startCompiler": "powershell.exe -Command npx tsc --build tsconfig.json -w",
+    "watchCompiledScripts": "powershell.exe -Command bash -c 'while sleep 3; do bash ./scripts/correctImports.sh; done'",
+    "start": "powershell.exe -Command bash scripts/start.sh",
+    "test": "jest",
+    "build": "sh scripts/build.sh",
+    "build_react": "react-scripts build"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "jest": {
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "verbose": true,
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/index.{ts,tsx}"
+    ],
+    "setupFilesAfterEnv": [
+      "@testing-library/jest-dom/extend-expect"
+    ],
+    "testRegex": "(/__tests__/.*|(\\.|/)test)\\.tsx?$",
+    "testEnvironment": "jest-environment-jsdom",
+    "testURL": "http://localhost",
+    "transformIgnorePatterns": [
+      "^.+\\.module\\.css$"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 95
+      }
+    }
   },
   "browserslist": {
     "production": [

@@ -59,7 +59,13 @@ public class TimeFoxHttpRouterVerticle extends AbstractVerticle {
 	 * Deliver the HTML/JavaScript.
 	 */
 	private void createStaticRoutes(Router router) {
-		router.get("/app").handler(StaticHandler.create("jsapp"));
+		router.get("/app*").handler(ctx -> {
+			if (ctx.request().path().equals("/")) {
+				ctx.response().sendFile("jsapp/index.html");
+			} else {
+				ctx.response().sendFile("jsapp" + ctx.request().path());
+			}
+		});
 	}
 
 }
