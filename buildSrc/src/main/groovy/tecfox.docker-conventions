@@ -1,0 +1,14 @@
+/**
+ * Custom Docker conventions for Gradle build.
+ * Copyright TecFox GmbH, 2022.
+ */
+plugins {
+	id "com.palantir.docker"
+}
+
+group = 'eu.tecfox.poc'
+version = '1.0'
+
+dependencies {
+	classpath "com.palantir.gradle.docker:gradle-docker:0.33.0"
+}

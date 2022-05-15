@@ -1,0 +1,139 @@
+// Assembles a Vertx deployment
+buildscript {
+	ext {
+		vertxVersion = '4.2.7'
+		slf4jVersion = '1.7.36'
+		junitVersion = '5.8.1'
+	}
+    repositories {
+        mavenCentral()
+		maven { 
+			url "https://plugins.gradle.org/m2/" 
+		}
+		gradlePluginPortal()
+    }
+	dependencies {
+		classpath "com.github.node-gradle:gradle-node-plugin:3.2.1" // TODO: move to conventions plugin
+		classpath "com.palantir.gradle.docker:gradle-docker:0.33.0"
+	}
+}
+
+plugins {
+	id 'java'
+	id 'application'
+	id 'distribution'
+	id 'tecfox.node-conventions'
+	id 'tecfox.java-conventions'
+	id 'eclipse'
+	id 'idea'
+}
+
+apply plugin: 'java-library'
+apply plugin: 'com.palantir.docker'
+
+version '1.0.0'
+
+dependencies {
+
+	//api("io.vertx:vertx-stack-depchain:$vertxVersion"){
+	//	exclude group: "org.slf4j", module: "slf4j-api"
+	//}
+	implementation "io.vertx:vertx-core:$vertxVersion"
+	implementation "io.vertx:vertx-web:$vertxVersion"
+	implementation "io.vertx:vertx-web-openapi:$vertxVersion"
+	
+	implementation("org.slf4j:slf4j-api:$slf4jVersion")
+	
+	testImplementation("io.vertx:vertx-junit5:$vertxVersion")
+  	testImplementation("io.vertx:vertx-web-client:$vertxVersion")
+  	
+    // Use JUnit Jupiter for testing.
+    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
+}
+
+java {
+	sourceCompatibility = 9
+	targetCompatibility = 9
+}
+
+tasks.withType(GroovyCompile) {
+    configure(groovyOptions) {
+        forkOptions.jvmArgs = ['-Xmx1024m']
+    }
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+}
+
+task npm_update(type: NpmTask, dependsOn: yarn_cache_clean) {
+	group = 'build'
+	description = 'Refresh the NPM cache acc. to package.json'
+	args = ['install', '--loglevel', 'warn']
+}
+
+task yarn_build(type: YarnTask, dependsOn: ['yarn']) {
+	group = 'build'
+	description = 'React compile'
+	args = ['run', 'build']
+}
+
+task yarn_test(type: YarnTask, dependsOn: 'yarn') {
+	group = 'build'
+	description = 'Run JEST'
+	args = ['run', 'test']
+}
+
+task yarn_start(type: YarnTask, dependsOn: ['yarn']) {
+	group = 'application'
+	description = 'Start app'
+	args = ['run', 'start']
+}
+
+task yarn_eject(type: YarnTask, dependsOn: ['yarn']) {
+	group = 'build'
+	description = 'Eject app'
+	args = ['run', 'eject']
+}
+
+task clean_app(type: Delete){
+	delete 'src/main/resources/jsapp'
+}
+
+// Assembly: copy the compiled app to static resource folder
+task copy_app(type: Copy, dependsOn: [yarn_build, clean_app]) {
+	from 'webapp/build'
+	include "**/*"
+	into 'src/main/resources/jsapp' // must be regarded by HttpProxyVerticle!
+}
+
+// This information is needed by shadowJar..
+mainClassName = 'io.vertx.core.Launcher'
+
+jar {
+	baseName = 'timefox-backend-vertx'
+	manifest {
+		attributes["Manifest-Version"] = '1.0'
+		attributes["Main-Class"] = 'io.vertx.core.Launcher'
+		attributes["Main-Verticle"] = 'eu.tecfox.timefox.server.HttpProxyVerticle'
+	}
+}
+
+jar.dependsOn copy_app
+
+plugins.withType(DistributionPlugin){
+	distTar {
+        compression = Compression.GZIP
+        extension = 'tar.gz'
+    }
+}
+
+docker {
+    name "tecfox.eu/timefox:${project.version}"
+    files file("build/distributions/timefox-backend-polyglott-${project.version}.tar.gz"), 'install.sh'
+    buildArgs([ZIP_FILE_NAME: "timefox-backend-polyglott-${project.version}.tar.gz", APP_USER: 'vertx', PASS_WORD: 'tecfox#007'])
+    labels(['version': "${project.version}"])
+    //load
+}
+
+docker.dependsOn assemble

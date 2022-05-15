@@ -1,0 +1,102 @@
+# An example for an API
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Swagger Timefox
+  license:
+    name: MIT
+servers:
+- url: http://timefox.swagger.io/v1
+paths:
+  /greet:
+    get:
+      summary: Say hello to Anonymous
+      operationId: sayHello2AnonGET
+      tags:
+      - anonymous
+      - greeting
+      responses:
+        '200':
+          description: A JSON greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Anonymous'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: POST
+      operationId: sayHelloToAnonymousPOST
+      tags:
+      - greeting
+      - response
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Mailer'
+      responses:
+        '201':
+          description: Anonymous response
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /greet/{name}: 
+    get:
+      summary: Say hello to Name
+      operationId: sayHelloGETwithParam
+      tags:
+      - greeting
+      responses:
+        '200':
+          description: A JSON greeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Identity'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Anonymous:
+      type: object
+      items:
+        $ref: '#/components/schemas/Anonymous'
+    Mailer:
+      required:
+      - name
+      properties:
+        name:
+          type: string
+        tag:
+          type: string
+    Identity:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+        tag:
+          type: string
+    Error:
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string

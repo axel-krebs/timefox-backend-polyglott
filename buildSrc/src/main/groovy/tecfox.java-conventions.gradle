@@ -1,0 +1,39 @@
+/**
+ * Custom Java conventions for Gradle builds. Note: gradlePluginPortal() repository must be given in root buildscript of the project!
+ * 
+ * Copyright TecFox GmbH, 2022.
+ */
+plugins {
+	id 'java'
+	id 'checkstyle'
+	id 'eclipse'
+	id 'idea'
+}
+
+group = 'eu.tecfox.poc'
+version = '1.0'
+
+dependencies {
+	
+	//testImplementation "junit:junit:4.13"
+	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.8.2'
+	testImplementation "org.mockito:mockito-core:4.0.0"
+}
+
+checkstyle {
+    toolVersion '7.8.1'
+    configFile rootProject.file("config/checkstyle/checkstyle.xml")
+    configProperties = [
+            'checkstyle.cache.file': "${buildDir}/checkstyle.cache",
+    ]
+    ignoreFailures = true
+    showViolations = true
+}
+
+checkstyleMain {
+    source ='src/main/java'
+}
+
+checkstyleTest {
+    source ='src/test/java'
+}

@@ -1,0 +1,52 @@
+/**
+ * Custom Node conventions for Gradle builds. Note: gradlePluginPortal() repository must be given in root buildscript of the project!
+ 
+ * Copyright TecFox GmbH, 2022.
+ */
+plugins {
+	id 'java'
+	id 'eclipse'
+	id 'idea'
+	id 'com.github.node-gradle.node'
+}
+
+group = 'eu.tecfox.poc'
+version = '1.0'
+
+ext {
+	//NODE_PATH = "${project.projectDir}\\node_modules"
+}
+
+node {
+	version = '16.14.2' // https://nodejs.org/en/
+	yarnVersion = '1.22.18' // https://yarnpkg.com/en/
+	download = true
+	// Note: Node, NPM and Yarn are installed in rootDir - must be dynamic when not sub-module!
+	// E.g. project.rootDir == null ? "NULL" : "Sub-Project!"
+	workDir = file("${project.rootDir}/.gradle/nodejs")
+	npmWorkDir = file("${project.rootDir}/.gradle/npm")
+	yarnWorkDir = file("${project.rootDir}/.gradle/yarn")
+	nodeProjectDir = file("${project.projectDir}/webapp")
+}
+
+tasks.withType(NpmTask) {
+	// configure NpmTask
+}
+
+tasks.withType(NpxTask) {
+	// configure NpxTask
+	inputs.dir("${project.projectDir}/webapp/node_modules")
+}
+
+tasks.withType(NodeTask) {
+	// configure NodeTask
+}
+
+tasks.withType(YarnTask) {
+	// configure YarnTask
+	//args = ["--modules-folder","${project.rootDir}/node_modules","--prefix","${project.rootDir}/node_modules"]
+}
+
+yarn_cache_clean {
+  args = ['--no-emoji', '--json']
+}
