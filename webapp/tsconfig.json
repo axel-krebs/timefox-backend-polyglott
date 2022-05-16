@@ -1,28 +1,19 @@
 {
-	"compilerOptions": {
-		"outDir": "build",
-		"module": "ESNext",
-		"jsx": "react",
-		"target": "ES2020",
-		"strict": true,
-		"moduleResolution": "Node",
-		"baseUrl": "src",
-		"lib": [
-			"DOM",
-			"DOM.Iterable",
-			"ES6",
-			"ES2020"
-		],
-		"rootDir": "src",
-		"listEmittedFiles": true,
-		"allowSyntheticDefaultImports": true,
-		"esModuleInterop": true
-	},
-	"include": [
-		"src/**/*"
-	],
-	"exclude": [
-		"node_modules",
-		"**/*.test.*"
-	]
+  "compilerOptions": {
+    "outDir": ".",
+    "declaration": true,
+    "module": "ES2020",
+    "target": "ES2020",
+    "strict": true,
+    "listEmittedFiles": true,
+    "allowSyntheticDefaultImports": true,
+    "rootDir": ".",
+    "moduleResolution": "Node"
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

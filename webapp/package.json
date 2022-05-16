@@ -1,84 +1,55 @@
 {
-  "name": "@akrebs/time-tracker",
-  "version": "0.2.0-dev.9",
-  "description": "Experimental Project: Tracking start and end of working time.",
-  "dependencies": {
-    "material-components-web": "^7.0.0",
-    "material-design-icons": "latest",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.10.3",
-    "@babel/plugin-transform-runtime": "^7.10.3",
-    "@babel/preset-env": "^7.10.3",
-    "@babel/preset-react": "^7.10.1",
-    "@babel/preset-typescript": "^7.10.1",
-    "@enbock/application-router": "^2.0.0",
-    "@enbock/simple-storage": "^2.0.0",
-    "@enbock/state-value-observer": "^2.0.0",
-    "@testing-library/jest-dom": "^5.11.0",
-    "@testing-library/react": "^10.4.3",
-    "@types/jest": "26.0.3",
-    "@types/react": "^16.9.41",
-    "@types/react-dom": "^16.9.8",
-    "jest": "^26.1.0",
-    "typescript": "^3.9.5",
-    "utf-8-validate": "^5.0.2",
-    "react-scripts": "^5.0.1"
-  },
-  "scripts": {
-    "winDevServer": "powershell.exe -Command bash ./scripts/copyFiles.sh develop; cd build; npx http-server",
-    "startCompiler": "powershell.exe -Command npx tsc --build tsconfig.json -w",
-    "watchCompiledScripts": "powershell.exe -Command bash -c 'while sleep 3; do bash ./scripts/correctImports.sh; done'",
-    "start": "powershell.exe -Command bash scripts/start.sh",
-    "test": "jest",
-    "build": "sh scripts/build.sh",
-    "build_react": "react-scripts build"
-  },
-  "jest": {
-    "roots": [
-      "<rootDir>/src"
-    ],
-    "verbose": true,
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "src/**/*.{ts,tsx}",
-      "!src/index.{ts,tsx}"
-    ],
-    "setupFilesAfterEnv": [
-      "@testing-library/jest-dom/extend-expect"
-    ],
-    "testRegex": "(/__tests__/.*|(\\.|/)test)\\.tsx?$",
-    "testEnvironment": "jest-environment-jsdom",
-    "testURL": "http://localhost",
-    "transformIgnorePatterns": [
-      "^.+\\.module\\.css$"
-    ],
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 95
-      }
-    }
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+	"name": "timefox-application-client",
+	"version": "0.1.0",
+	"description": "Timefox Application Entity Gateways",
+	"main": "dist/",
+	"repository": "git@bitbucket.org:enbock-tecfox/timefox-application.git",
+	"author": "Endre Bock <endre.bock@tecfox.eu>",
+	"license": "MIT",
+	"devDependencies": {
+		"@testing-library/jest-dom": "^5.16.2",
+		"@types/jest": "^27.4.0",
+		"jest": "^27.4.7",
+		"jest-mock-extended": "^2.0.4",
+		"ts-jest": "^27.1.3",
+		"typescript": "^4.5.5",
+		"rimraf": "3.0.2",
+		"@openapitools/openapi-generator-cli": "2.5.1"
+	},
+	"scripts": {
+		"test": "jest",
+		"clean-gen":"rimraf -rf src/generated-sources/timefoxapi",
+		"gen-client-na": "openapi-generator-cli generate -i docs/client-na.yaml -g typescript-fetch -o generated-sources/timefoxapi"
+	},
+	"jest": {
+		"roots": [
+			"."
+		],
+		"collectCoverage": true,
+		"verbose": true,
+		"collectCoverageFrom": [
+			"**/*.ts"
+		],
+		"coveragePathIgnorePatterns": [
+			"TestHelper.ts"
+		],
+		"preset": "ts-jest",
+		"testEnvironment": "jsdom",
+		"testRegex": "\\.test\\.ts$",
+		"moduleFileExtensions": [
+			"js",
+			"ts"
+		],
+		"coverageThreshold": {
+			"global": {
+				"branches": 90
+			}
+		},
+		"modulePathIgnorePatterns": [
+			".idea"
+		],
+		"setupFilesAfterEnv": [
+			"<rootDir>/setupTests.ts"
+		]
+	}
 }

@@ -6,7 +6,7 @@ buildscript {
 	}
 	dependencies {
 		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21"
-		classpath "com.github.node-gradle:gradle-node-plugin:3.2.1"
+		classpath "com.github.node-gradle:gradle-node-plugin:3.3.0"
 	}
 }
 

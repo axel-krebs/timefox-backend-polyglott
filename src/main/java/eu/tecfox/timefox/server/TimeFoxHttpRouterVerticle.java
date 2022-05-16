@@ -5,7 +5,6 @@ import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.net.PemKeyCertOptions;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.handler.StaticHandler;
 
 /**
  * Die Klasse ist lediglich eine "Durchleitung" von HTTP requests und exponiert

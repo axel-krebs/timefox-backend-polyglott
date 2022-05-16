@@ -79,16 +79,10 @@ task yarn_test(type: YarnTask, dependsOn: 'yarn') {
 	args = ['run', 'test']
 }
 
-task yarn_start(type: YarnTask, dependsOn: ['yarn']) {
-	group = 'application'
-	description = 'Start app'
-	args = ['run', 'start']
-}
-
-task yarn_build_react(type: YarnTask, dependsOn: ['yarn']) {
+task yarn_gen_client(type: YarnTask, dependsOn: ['yarn']) {
 	group = 'build'
-	description = 'Run react-scripts'
-	args = ['run', 'build_react']
+	description = 'Generate the client code (TS)'
+	args = ['run', 'gen-client-na']
 }
 
 task clean_app(type: Delete){
