@@ -2,6 +2,9 @@
   "$schema": "./node_modules/@openapitools/openapi-generator-cli/config.schema.json",
   "spaces": 2,
   "generator-cli": {
-    "version": "5.4.0"
+    "version": "5.4.0",
+    "generatorName": "typescript-fetch",
+    "output": "#{cwd}/generated-sources/v1.0/timefoxapi",
+    "glob": "souce/v1.0/client-na.yaml"
   }
 }

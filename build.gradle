@@ -33,6 +33,11 @@ apply plugin: 'com.palantir.docker'
 
 version '1.0.0'
 
+ext {
+	apiVersion = 'v1.0'
+	jsonSchemaFilePath = 'generated-sources/timefox-client.json'
+}
+
 dependencies {
 
 	//api("io.vertx:vertx-stack-depchain:$vertxVersion"){
@@ -74,17 +79,56 @@ task npm_update(type: NpmTask, dependsOn: yarn_cache_clean) {
 }
 
 task yarn_test(type: YarnTask, dependsOn: 'yarn') {
-	group = 'build'
+	group = 'verification'
 	description = 'Run JEST'
 	args = ['run', 'test']
 }
 
-task yarn_gen_client(type: YarnTask, dependsOn: ['yarn']) {
+task clear_gen_json(type: Delete){
 	group = 'build'
-	description = 'Generate the client code (TS)'
-	args = ['run', 'gen-client-na']
+	delete "${jsonSchemaFilePath}"
 }
 
+task npx_generate_json(type: NpxTask) {
+	dependsOn clear_gen_json
+	group = 'generation'
+	description = 'Generate JSON schema'
+	command = "json-schema-generator"
+	args = ['souce/timefox-client.json','-o',"${jsonSchemaFilePath}"]
+}
+
+// Only if previous does not work:
+task yarn_generate_json(type: YarnTask, dependsOn: ['yarn']) {
+	group = 'generation'
+	description = 'Generate JSON schema'
+	args = ['run','generate-json-schema']
+}
+
+task yarn_clear_generated_sources(type: YarnTask, dependsOn: ['yarn']) {
+	group = 'generation'
+	description = 'Generate the client code (TS)'
+	args = ['run', 'clean-generated-sources']
+}
+
+task yarn_gen_client_jersey(type: YarnTask, dependsOn: ['yarn','yarn_clear_generated_sources']) {
+	group = 'generation'
+	description = 'Generate the client code (TS)'
+	args = ['run', 'gen-client-jersey']
+}
+
+task yarn_gen_client_spring(type: YarnTask, dependsOn: ['yarn','yarn_clear_generated_sources']) {
+	group = 'generation'
+	description = 'Generate the client code (TS)'
+	args = ['run', 'gen-client-spring']
+}
+
+task yarn_gen_client_ruby(type: YarnTask, dependsOn: ['yarn','yarn_clear_generated_sources']) {
+	group = 'generation'
+	description = 'Generate the client code (TS)'
+	args = ['run', 'gen-client-ruby']
+}
+
+// For future releases: include TimeFox app in Backend (single node deployment)
 task clean_app(type: Delete){
 	group = 'build'
 	delete 'src/main/resources/jsapp'
