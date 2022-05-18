@@ -1,0 +1,122 @@
+openapi: 3.0.1
+info:
+  title: Timefox Client API
+  description: The API for the TimeFox Client
+  version: v1.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+- url: http://timefox.swagger.io/v1
+paths:
+  /loadRange/{startDate}/{endDate}:
+    get:
+      tags:
+      - timefox
+      - range
+      summary: Loads a range from start date to end date
+      operationId: loadRange
+      parameters:
+      - name: startDate
+        in: path
+        description: The startDate
+        required: true
+        schema:
+          type: string
+          format: date-time
+      - name: endDate
+        in: path
+        description: The endDate
+        required: true
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Entity'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entity'
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: Invalid startDate or endDate supplied
+        '404':
+          description: Range not valid
+  /loadRecord/{date}:
+    get:
+      tags:
+      - timefox
+      - record
+      summary: Loads a record for a given date
+      operationId: loadRecord
+      parameters:
+      - name: date
+        in: path
+        description: The date
+        required: true
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Entity'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entity'
+        '400':
+          description: Invalid startDate or endDate supplied
+        '404':
+          description: Range not valid
+  /createRecord:
+    post:
+      tags:
+      - record
+      - timefox
+      summary: Created record
+      description: This can only be done by the logged in user.
+      operationId: createRecord
+      responses:
+        '400':
+          description: Invalid record supplied
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Entity'
+        description: Created record object
+        required: true
+  /updateRecord:
+    put:
+      tags:
+      - record
+      - timefox
+      summary: Updated record
+      description: This can only be done by the logged in user.
+      operationId: updateRecord
+      responses:
+        '400':
+          description: Invalid record supplied
+        '404':
+          description: Record not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Entity'
+        description: Updated record object
+        required: true
+
+components:
+  schemas: [
+    $ref: 'timefox-client.json'
+  ]

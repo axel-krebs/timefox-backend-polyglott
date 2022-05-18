@@ -12,23 +12,27 @@
 	"devDependencies": {
 		"@testing-library/jest-dom": "^5.16.2",
 		"@types/jest": "^27.4.0",
+		"@types/node": "^17.0.34",
 		"jest": "^27.4.7",
 		"jest-mock-extended": "^2.0.4",
 		"ts-jest": "^27.1.3",
-		"typescript": "^4.5.5",
+		"typescript": "^4.6.4",
 		"rimraf": "3.0.2",
-		"json-schema-generator": "2.0.6",
 		"@apidevtools/openapi-schemas": "2.1.0",
 		"@openapitools/openapi-generator-cli": "2.5.1",
-		"openapi-schemas": "2.1.0"
+		"json-schema-generator": "2.0.6",
+		"typescript-require": "0.3.0",
+		"typescript-json-schema": "0.53.0"
 	},
 	"scripts": {
 		"test": "jest",
-		"generate-json-schema": "node timefox-json.js",
+		"compile-json-generator": "tsc -p .",
+		"generate-json-schema": "node dist/timefox-json.js --search-dir=src/Record --search-classes=Entity --symbols=Entity,TimeRecord --outfile=timefox-client.json",
 		"clean-generated-sources": "rimraf -rf generated-sources/timefoxapi/v1.0/",
-		"gen-client-jersey": "openapi-generator-cli generate --generator-key v3.0 -i souce/v1.0/client-na.yaml -g jaxrs-jersey -o generated-sources/timefoxapi/v1.0/jersey",
-		"gen-client-spring": "openapi-generator-cli generate --generator-key v3.0 -i souce/v1.0/client-na.yaml -g spring -o generated-sources/timefoxapi/v1.0/spring",
-		"gen-client-ruby": "openapi-generator-cli generate --generator-key v3.0 -i souce/v1.0/client-na.yaml -g ruby -o generated-sources/timefoxapi/v1.0/ruby"
+		"generate-client-jersey": "openapi-generator-cli generate --generator-key v3.0 -i ../src/main/resources/api/v1.0/client-na.yaml -g jaxrs-jersey -o generated-sources/timefoxapi/v1.0/jersey",
+		"generate-client-spring": "openapi-generator-cli generate --generator-key v3.0 -i ../src/main/resources/api/v1.0/client-na.yaml -g spring -o generated-sources/timefoxapi/v1.0/spring",
+		"generate-client-ruby": "openapi-generator-cli generate --generator-key v3.0 -i ../src/main/resources/api/v1.0/client-na.yaml -g ruby -o generated-sources/timefoxapi/v1.0/ruby",
+		"generate-client-nodejs": "openapi-generator-cli generate --generator-key v3.0 -i ../src/main/resources/api/v1.0/client-na.yaml -g graphql-nodejs-express-server -o generated-sources/timefoxapi/v1.0/graphql"
 	},
 	"jest": {
 		"roots": [

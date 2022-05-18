@@ -1,35 +1,27 @@
 // Assembles a Vertx deployment
 buildscript {
 	ext {
-		vertxVersion = '4.2.7'
-		slf4jVersion = '1.7.36'
-		junitVersion = '5.8.1'
 	}
     repositories {
         mavenCentral()
-		maven { 
-			url "https://plugins.gradle.org/m2/" 
-		}
 		gradlePluginPortal()
     }
 	dependencies {
 		classpath "com.github.node-gradle:gradle-node-plugin:3.2.1" // TODO: move to conventions plugin
-		classpath "com.palantir.gradle.docker:gradle-docker:0.33.0"
 	}
 }
 
+// Wermutstropfen: die Plugins können nicht in die einzelnen Profile verlagert werden..
 plugins {
 	id 'java'
 	id 'application'
 	id 'distribution'
-	id 'tecfox.node-conventions'
 	id 'tecfox.java-conventions'
-	id 'eclipse'
-	id 'idea'
+	id 'tecfox.node-conventions'
 }
 
-apply plugin: 'java-library'
-apply plugin: 'com.palantir.docker'
+if (!hasProperty('buildProfile')) ext.buildProfile = 'default'
+apply from: "profile-${buildProfile}.gradle"
 
 version '1.0.0'
 
@@ -38,71 +30,41 @@ ext {
 	jsonSchemaFilePath = 'generated-sources/timefox-client.json'
 }
 
-dependencies {
-
-	//api("io.vertx:vertx-stack-depchain:$vertxVersion"){
-	//	exclude group: "org.slf4j", module: "slf4j-api"
-	//}
-	implementation "io.vertx:vertx-core:$vertxVersion"
-	implementation "io.vertx:vertx-web:$vertxVersion"
-	implementation "io.vertx:vertx-web-openapi:$vertxVersion"
-	
-	implementation("org.slf4j:slf4j-api:$slf4jVersion")
-	
-	testImplementation("io.vertx:vertx-junit5:$vertxVersion")
-  	testImplementation("io.vertx:vertx-web-client:$vertxVersion")
-  	
-    // Use JUnit Jupiter for testing.
-    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
-}
-
-java {
-	sourceCompatibility = 9
-	targetCompatibility = 9
-}
-
-tasks.withType(GroovyCompile) {
-    configure(groovyOptions) {
-        forkOptions.jvmArgs = ['-Xmx1024m']
-    }
-}
-
-tasks.withType(Test) {
-    useJUnitPlatform()
-}
-
-// 'yarn_cache_clean' is defined in tecfox.node-conventions.gradle
+// 'yarn_cache_clean' is defined in tecfox.node-conventions.gradle; pls. exec this task 
+// prior to running the yarn tasks, because author did not have time..
 task npm_update(type: NpmTask, dependsOn: yarn_cache_clean) {
 	group = 'build'
 	description = 'Refresh the NPM cache acc. to package.json'
 	args = ['install', '--loglevel', 'warn']
 }
 
-task yarn_test(type: YarnTask, dependsOn: 'yarn') {
-	group = 'verification'
-	description = 'Run JEST'
-	args = ['run', 'test']
-}
-
-task clear_gen_json(type: Delete){
-	group = 'build'
+task clear_generated_json(type: Delete){
+	group = 'generation'
 	delete "${jsonSchemaFilePath}"
 }
 
-task npx_generate_json(type: NpxTask) {
-	dependsOn clear_gen_json
+task yarn_compile_json_generator(type: YarnTask, dependsOn: 'yarn') {
 	group = 'generation'
-	description = 'Generate JSON schema'
-	command = "json-schema-generator"
-	args = ['souce/timefox-client.json','-o',"${jsonSchemaFilePath}"]
+	description = 'Compile the JS programm that will generate the JSON schema (timefox-json.js)'
+	args = ['run', 'compile-json-generator']
 }
 
-// Only if previous does not work:
-task yarn_generate_json(type: YarnTask, dependsOn: ['yarn']) {
+// Memento: Actually, the 'yarn_compile_json_generator' task should be called prior, butt..
+task yarn_generate_json(type: YarnTask, dependsOn: ['yarn','clear_generated_json']) {
 	group = 'generation'
 	description = 'Generate JSON schema'
 	args = ['run','generate-json-schema']
 }
+
+//task npx_generate_json_schema(type: NpxTask) {
+//	dependsOn clear_gen_json
+//	group = 'generation'
+//	description = 'Generate JSON schema'
+//	command = "json-schema-generator"
+//	args = ['souce/timefox-client.json','-o',"${jsonSchemaFilePath}"]
+//	command = "json-schema-generator"
+//	args = ['src/Record/Entity.ts','-o',"${jsonSchemaFilePath}",'TimeRecord']
+//}
 
 task yarn_clear_generated_sources(type: YarnTask, dependsOn: ['yarn']) {
 	group = 'generation'
@@ -110,65 +72,20 @@ task yarn_clear_generated_sources(type: YarnTask, dependsOn: ['yarn']) {
 	args = ['run', 'clean-generated-sources']
 }
 
-task yarn_gen_client_jersey(type: YarnTask, dependsOn: ['yarn','yarn_clear_generated_sources']) {
+task yarn_generate_client_jersey(type: YarnTask, dependsOn: ['yarn','yarn_clear_generated_sources']) {
 	group = 'generation'
 	description = 'Generate the client code (TS)'
-	args = ['run', 'gen-client-jersey']
+	args = ['run', 'generate-client-jersey']
 }
 
-task yarn_gen_client_spring(type: YarnTask, dependsOn: ['yarn','yarn_clear_generated_sources']) {
+task yarn_generate_client_spring(type: YarnTask, dependsOn: ['yarn','yarn_clear_generated_sources']) {
 	group = 'generation'
 	description = 'Generate the client code (TS)'
-	args = ['run', 'gen-client-spring']
+	args = ['run', 'generate-client-spring']
 }
 
-task yarn_gen_client_ruby(type: YarnTask, dependsOn: ['yarn','yarn_clear_generated_sources']) {
+task yarn_generate_client_ruby(type: YarnTask, dependsOn: ['yarn','yarn_clear_generated_sources']) {
 	group = 'generation'
 	description = 'Generate the client code (TS)'
-	args = ['run', 'gen-client-ruby']
+	args = ['run', 'generate-client-ruby']
 }
-
-// For future releases: include TimeFox app in Backend (single node deployment)
-task clean_app(type: Delete){
-	group = 'build'
-	delete 'src/main/resources/jsapp'
-}
-
-// Assembly: copy the compiled app to static resource folder
-task copy_app(type: Copy, dependsOn: [clean_app]) {
-	group = 'build'
-	from 'webapp/build'
-	include "**/*"
-	into 'src/main/resources/jsapp' // must be regarded by HttpProxyVerticle!
-}
-
-// This information is needed by shadowJar..
-mainClassName = 'io.vertx.core.Launcher'
-
-jar {
-	baseName = 'timefox-backend-vertx'
-	manifest {
-		attributes["Manifest-Version"] = '1.0'
-		attributes["Main-Class"] = 'io.vertx.core.Launcher'
-		attributes["Main-Verticle"] = 'eu.tecfox.timefox.server.HttpProxyVerticle'
-	}
-}
-
-jar.dependsOn copy_app
-
-plugins.withType(DistributionPlugin){
-	distTar {
-        compression = Compression.GZIP
-        extension = 'tar.gz'
-    }
-}
-
-docker {
-    name "tecfox.eu/timefox:${project.version}"
-    files file("build/distributions/timefox-backend-polyglott-${project.version}.tar.gz"), 'install.sh'
-    buildArgs([ZIP_FILE_NAME: "timefox-backend-polyglott-${project.version}.tar.gz", APP_USER: 'vertx', PASS_WORD: 'tecfox#007'])
-    labels(['version': "${project.version}"])
-    //load
-}
-
-docker.dependsOn assemble

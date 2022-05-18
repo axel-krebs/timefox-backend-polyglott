@@ -5,6 +5,6 @@
     "version": "5.4.0",
     "generatorName": "typescript-fetch",
     "output": "#{cwd}/generated-sources/v1.0/timefoxapi",
-    "glob": "souce/v1.0/client-na.yaml"
+    "glob": "../src/main/resources/api/v1.0/client-na.yaml"
   }
 }

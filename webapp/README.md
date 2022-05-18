@@ -1,3 +1,4 @@
 # TimeFox Application Client
 
-Implementation TimeFox Application Entity Gateways.
+- JSON schema generator for TimeFox Client API
+- OpenAPI backend generator

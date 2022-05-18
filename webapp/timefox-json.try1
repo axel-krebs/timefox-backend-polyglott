@@ -1,0 +1,53 @@
+/* Copyright TecFox GmbH, 2022. JSON schema generator for TimeFox Client API. 
+* Dysfunctional: typescript-require needs construcors being defined in TS classes..
+* Whenever they are available, this may be re-activated..
+*/
+require('typescript-require')({
+	targetES5: true,
+	exitOnError: true,
+	emitOnError: true
+});
+const fs = require('fs');
+const path = require('path');
+const outputFilePath = "generated-sources/timefox-client.test";
+const jsonSchemaGenerator = require('json-schema-generator');
+
+require('./src/CatchHelper.ts');
+require('./src/DateHelper.ts');
+require('./src/ParseHelper.ts');
+require('./src/ApiHelper/Method.ts');
+require('./src/ApiHelper/FetchHelper.ts');
+require('./src/Record/Entity.ts');
+require('./src/Record/Cache/Cache.ts');
+require('./src/Record/Cache/Memory.ts');
+require('./src/Record/Client/Client.ts');
+require('./src/Record/Client/Fake.ts');
+// need Azure here?
+require('./src/Report/Client.ts');
+require('./src/Report/Storage/Storage.ts');
+require('./src/Report/Storage/Encoder.ts');
+require('./src/Report/Storage/Parser.ts');
+
+var json = { 
+//	CatchHelper,
+//	DateHelper,
+//	ParseHelper,
+//	Method,
+//	FetchHelper,
+//	tfRecordCache,
+//	tfRecordMemory,
+//	tfRecordClient,
+//	tfClientFake,
+//	tfReportClient,
+//	tfReportStorage,
+//	tfReportStorageEncoder,
+//	tfReportStorageParser
+};
+
+var jsonSchemaResult = jsonSchemaGenerator(json);
+
+var filePath = path.join(__dirname, outputFilePath);
+fs.openSync(filePath, "w");
+fs.appendFileSync(filePath, JSON.stringify(jsonSchemaResult));
+
+return jsonSchemaResult;

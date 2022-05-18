@@ -128,7 +128,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TimeRecord'
-    eu.tecfox.timefox.record.TimeRecord:
+    TimeRecord:
       type: object
       properties:
         hours: 
@@ -138,7 +138,7 @@ components:
           type: string
         text: 
           type: string
-    eu.tecfox.timefox.Error:
+    Error:
       required:
       - code
       - message
@@ -148,3 +148,4 @@ components:
           format: int32
         message:
           type: string
+          
