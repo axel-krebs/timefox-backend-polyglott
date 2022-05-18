@@ -23,11 +23,12 @@ plugins {
 if (!hasProperty('buildProfile')) ext.buildProfile = 'default'
 apply from: "profile-${buildProfile}.gradle"
 
-version '1.0.0'
+version 'v1.0'
 
 ext {
 	apiVersion = 'v1.0'
 	jsonSchemaFilePath = 'generated-sources/timefox-client.json'
+	apiFilePath = "src/main/resources/api/${project.version}/"
 }
 
 // 'yarn_cache_clean' is defined in tecfox.node-conventions.gradle; pls. exec this task 
@@ -72,20 +73,34 @@ task yarn_clear_generated_sources(type: YarnTask, dependsOn: ['yarn']) {
 	args = ['run', 'clean-generated-sources']
 }
 
-task yarn_generate_client_jersey(type: YarnTask, dependsOn: ['yarn','yarn_clear_generated_sources']) {
+task copy_apifile_tmp(type: Copy) {
+	group 'generation'
+	from "${apiFilePath}"
+	include "*"
+	into 'webapp/tmp'
+}
+
+task yarn_generate_client_jersey(type: YarnTask, dependsOn: ['yarn','copy_apifile_tmp']) {
 	group = 'generation'
 	description = 'Generate the client code (TS)'
 	args = ['run', 'generate-client-jersey']
 }
 
-task yarn_generate_client_spring(type: YarnTask, dependsOn: ['yarn','yarn_clear_generated_sources']) {
+task yarn_generate_client_spring(type: YarnTask, dependsOn: ['yarn','copy_apifile_tmp']) {
 	group = 'generation'
 	description = 'Generate the client code (TS)'
 	args = ['run', 'generate-client-spring']
 }
 
-task yarn_generate_client_ruby(type: YarnTask, dependsOn: ['yarn','yarn_clear_generated_sources']) {
+task yarn_generate_client_ruby(type: YarnTask, dependsOn: ['yarn','copy_apifile_tmp']) {
 	group = 'generation'
 	description = 'Generate the client code (TS)'
 	args = ['run', 'generate-client-ruby']
 }
+
+task yarn_generate_client_graphql(type: YarnTask, dependsOn: ['yarn','copy_apifile_tmp']) {
+	group = 'generation'
+	description = 'Generate the client code (TS)'
+	args = ['run', 'generate-client-graphql']
+}
+

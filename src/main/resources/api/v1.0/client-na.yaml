@@ -117,6 +117,19 @@ paths:
         required: true
 
 components:
-  schemas: [
-    $ref: 'timefox-client.json'
-  ]
+  schemas: 
+    Entity:
+     $ref: 'timefox-client.json#/definitions/Entity'
+    TimeRecord:
+      $ref: 'timefox-client.json#/definitions/TimeRecord'
+    Error:
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+          
