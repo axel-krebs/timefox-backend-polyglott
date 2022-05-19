@@ -4,7 +4,7 @@
  * Copyright TecFox GmbH, 2022.
  */
 plugins {
-	id 'java'
+	id 'java-library'
 	id 'checkstyle'
 	id 'eclipse'
 	id 'idea'
@@ -13,11 +13,13 @@ plugins {
 group = 'eu.tecfox.poc'
 version = '1.0'
 
+// Question: is it desirable to have a global JDK version, or should profiles define one for themselves?
+def jdkVersion = !hasProperty('javaVersion') ? 1.8 : javaVersion
+// Answer: Profiles should define Java level for themselves, so plugin is not overriden in this place..
+
+// common dependencies
 dependencies {
-	
-	//testImplementation "junit:junit:4.13"
-	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.8.2'
-	testImplementation "org.mockito:mockito-core:4.0.0"
+	// any?
 }
 
 checkstyle {

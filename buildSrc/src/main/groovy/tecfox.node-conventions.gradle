@@ -5,17 +5,35 @@
  */
 plugins {
 	id 'java'
-	id 'eclipse'
 	id 'idea'
+	id 'eclipse'
+	id 'eclipse-wtp'
 	id 'com.github.node-gradle.node'
 }
 
-group = 'eu.tecfox.poc'
+group = 'eu.tecfox.web'
 version = '1.0'
+
+def webContextPath = "${project.projectDir}/webapp"
 
 ext {
 	//NODE_PATH = "${project.projectDir}\\node_modules"
 }
+
+//eclipse.wtp.facet.file.withXml { provider ->
+//    provider.asNode().fixed.find { it.@facet == 'jst.java' }.@facet = 'jst2.java'
+//}
+
+eclipse {
+	wtp {
+		component {
+			contextPath = webContextPath
+			sourceDirs += file("$webContextPath/src")
+		}
+	}
+}
+
+// IDEA config left for IntelliJ enthusiasts..
 
 node {
 	version = '16.14.2' // https://nodejs.org/en/
@@ -26,7 +44,7 @@ node {
 	workDir = file("${project.rootDir}/.gradle/nodejs")
 	npmWorkDir = file("${project.rootDir}/.gradle/npm")
 	yarnWorkDir = file("${project.rootDir}/.gradle/yarn")
-	nodeProjectDir = file("${project.projectDir}/webapp")
+	nodeProjectDir = file(webContextPath)
 }
 
 tasks.withType(NpmTask) {

@@ -1,9 +1,11 @@
 // Assembles a Vertx deployment
 buildscript {
 	ext {
+		//
 	}
     repositories {
         mavenCentral()
+		// Wermutstropfen: die Plugins können nicht in die einzelnen Profile verlagert werden..
 		gradlePluginPortal()
     }
 	dependencies {
@@ -11,25 +13,24 @@ buildscript {
 	}
 }
 
-// Wermutstropfen: die Plugins können nicht in die einzelnen Profile verlagert werden..
 plugins {
-	id 'java'
 	id 'application'
 	id 'distribution'
-	id 'tecfox.java-conventions'
+	//id 'tecfox.java-conventions' // draws in 'java-library', which is not wanted in root project!
 	id 'tecfox.node-conventions'
 }
 
+// Apply the 'profile' ..
 if (!hasProperty('buildProfile')) ext.buildProfile = 'default'
 apply from: "profile-${buildProfile}.gradle"
 
-version 'v1.0'
-
 ext {
-	apiVersion = 'v1.0'
+	apiVersion = 'v1.0' // Should reflect the version of the API
 	jsonSchemaFilePath = 'generated-sources/timefox-client.json'
 	apiFilePath = "src/main/resources/api/${project.version}/"
 }
+
+version ext.apiVersion
 
 // 'yarn_cache_clean' is defined in tecfox.node-conventions.gradle; pls. exec this task 
 // prior to running the yarn tasks, because author did not have time..
@@ -73,6 +74,7 @@ task yarn_clear_generated_sources(type: YarnTask, dependsOn: ['yarn']) {
 	args = ['run', 'clean-generated-sources']
 }
 
+// The 'openapi-generator-cli' eventually deletes the input YAML, so this is a work-around..
 task copy_apifile_tmp(type: Copy) {
 	group 'generation'
 	from "${apiFilePath}"

@@ -51,9 +51,6 @@ const program = TJS.getProgramFromFiles(
 // ... or a generator that lets us incrementally get more schemas
 const generator = TJS.buildGenerator(program, settings);
 
-// generator can be also reused to speed up generating the schema if usecase allows:
-//const schemaWithReusedGenerator = TJS.generateSchema(program, "TimeRecord,Entity", settings, [], generator!);
-
 if(generator != null) {
 
 	// all symbols

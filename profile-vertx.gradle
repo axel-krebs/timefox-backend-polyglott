@@ -3,6 +3,7 @@ buildscript {
 		vertxVersion = '4.2.7'
 		slf4jVersion = '1.7.36'
 		junitVersion = '5.8.1'
+		mockitoVersion = '4.5.1'
 	}
 	repositories {
         mavenCentral()
@@ -16,7 +17,7 @@ buildscript {
 	}
 }
 
-apply plugin: 'java-library'
+apply plugin: 'tecfox.java-conventions'
 //apply plugin: 'com.palantir.docker'
 
 dependencies {
@@ -35,11 +36,13 @@ dependencies {
   	
     // Use JUnit Jupiter for testing.
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
+	testImplementation "org.mockito:mockito-core:$mockitoVersion"
 }
 
+// using deprecated flags here..
 java {
-	sourceCompatibility = 9
-	targetCompatibility = 9
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
 }
 
 tasks.withType(GroovyCompile) {

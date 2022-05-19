@@ -29,10 +29,10 @@
 		"compile-json-generator": "tsc -p .",
 		"generate-json-schema": "node dist/timefox-json.js --search-dir=src/Record --search-classes=Entity --symbols=Entity,TimeRecord --outfile=timefox-client.json",
 		"clean-generated-sources":"rimraf -rf generated-sources/timefoxapi/v1.0/",
-		"generate-client-jersey": "rimraf -rf generated-sources/timefoxapi/v1.0/jersey && openapi-generator-cli generate --generator-key v3.0 -i tmp/client-na.yaml -g jaxrs-jersey -o generated-sources/timefoxapi/v1.0/jersey",
-		"generate-client-spring": "rimraf -rf generated-sources/timefoxapi/v1.0/spring; openapi-generator-cli generate --generator-key v3.0 -i tmp/client-na.yaml -g spring -o generated-sources/timefoxapi/v1.0/spring",
-		"generate-client-ruby": "rimraf -rf generated-sources/timefoxapi/v1.0/ruby; openapi-generator-cli generate --generator-key v3.0 -i tmp/client-na.yaml -g ruby -o generated-sources/timefoxapi/v1.0/ruby",
-		"generate-client-graphql": "rimraf -rf generated-sources/timefoxapi/v1.0/graphql; openapi-generator-cli generate --generator-key v3.0 -i tmp/client-na.yaml -g graphql-nodejs-express-server -o generated-sources/timefoxapi/v1.0/graphql"
+		"generate-client-jersey": "openapi-generator-cli generate --generator-key v3.0 -i tmp/client-na.yaml -g jaxrs-jersey -o generated-sources/timefoxapi/v1.0/jersey",
+		"generate-client-spring": "openapi-generator-cli generate --generator-key v3.0 -i tmp/client-na.yaml -g spring -o generated-sources/timefoxapi/v1.0/spring",
+		"generate-client-ruby": "openapi-generator-cli generate --generator-key v3.0 -i tmp/client-na.yaml -g ruby -o generated-sources/timefoxapi/v1.0/ruby",
+		"generate-client-graphql": "openapi-generator-cli generate --generator-key v3.0 -i tmp/client-na.yaml -g graphql-nodejs-express-server -o generated-sources/timefoxapi/v1.0/graphql"
 	},
 	"jest": {
 		"roots": [
