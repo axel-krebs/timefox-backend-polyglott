@@ -1,4 +1,4 @@
-package eu.tecfox.timefox.server;
+package eu.tecfox.timefox.api.server;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;

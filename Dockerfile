@@ -1,4 +1,4 @@
-FROM krebs9691/ubu20_jdk17:temp
+FROM openjdk:19-slim-buster
 
 ARG APP_USER
 ARG PASS_WORD
