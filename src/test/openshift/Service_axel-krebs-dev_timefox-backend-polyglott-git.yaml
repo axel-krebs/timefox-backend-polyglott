@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    app.openshift.io/vcs-ref: ""
+    app.openshift.io/vcs-uri: https://github.com/axel-krebs/timefox-backend-polyglott.git
+    openshift.io/generated-by: OpenShiftWebConsole
+  labels:
+    app: timefox-backend-polyglott-git
+    app.kubernetes.io/component: timefox-backend-polyglott-git
+    app.kubernetes.io/instance: timefox-backend-polyglott-git
+    app.kubernetes.io/name: timefox-backend-polyglott-git
+    app.kubernetes.io/part-of: timefox-backend-polyglott-git-app
+  name: timefox-backend-polyglott-git
+spec:
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: 8080-tcp
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: timefox-backend-polyglott-git
+    deploymentconfig: timefox-backend-polyglott-git
+  sessionAffinity: None
+  type: ClusterIP

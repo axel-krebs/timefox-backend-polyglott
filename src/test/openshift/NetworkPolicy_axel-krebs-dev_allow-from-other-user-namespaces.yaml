@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  annotations:
+    toolchain.dev.openshift.com/last-applied-configuration: '{"apiVersion":"networking.k8s.io/v1","kind":"NetworkPolicy","metadata":{"labels":{"toolchain.dev.openshift.com/owner":"axel-krebs","toolchain.dev.openshift.com/provider":"codeready-toolchain"},"name":"allow-from-other-user-namespaces","namespace":"axel-krebs-dev"},"spec":{"ingress":[{"from":[{"namespaceSelector":{"matchLabels":{"name":"axel-krebs-stage"}}}]}],"podSelector":{},"policyTypes":["Ingress"]}}'
+  labels:
+    toolchain.dev.openshift.com/owner: axel-krebs
+    toolchain.dev.openshift.com/provider: codeready-toolchain
+  name: allow-from-other-user-namespaces
+spec:
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: axel-krebs-stage
+  podSelector: {}
+  policyTypes:
+  - Ingress

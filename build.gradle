@@ -10,6 +10,7 @@ buildscript {
     }
 	dependencies {
 		classpath "com.github.node-gradle:gradle-node-plugin:3.2.1" // TODO: move to conventions plugin
+		classpath "com.palantir.gradle.docker:gradle-docker:0.33.0"
 	}
 }
 
@@ -24,9 +25,11 @@ plugins {
 if (!hasProperty('buildProfile')) ext.buildProfile = 'default'
 apply from: "profile-${buildProfile}.gradle"
 
+apply plugin: 'com.palantir.docker'
+
 ext {
 	apiVersion = 'v1.0' // Should reflect the version of the API
-	jsonSchemaFilePath = 'generated-sources/timefox-client.json'
+	jsonSchemaFilePath = 'webapp/dist/timefox-client.json'
 	apiFilePath = "src/main/resources/api/${project.version}/"
 }
 
@@ -106,3 +109,12 @@ task yarn_generate_client_graphql(type: YarnTask, dependsOn: ['yarn','copy_apifi
 	args = ['run', 'generate-client-graphql']
 }
 
+docker {
+    name "tecfox.eu/timefox:${project.version}"
+   files file("build/distributions/timefox-backend-polyglott-${project.version}.tar.gz"), 'install.sh'
+    buildArgs([ZIP_FILE_NAME: "timefox-backend-polyglott-${project.version}.tar.gz", APP_USER: 'vertx', PASS_WORD: 'tecfox#007'])
+    labels(['version': "${project.version}"])
+    //load
+}
+
+docker.dependsOn assemble

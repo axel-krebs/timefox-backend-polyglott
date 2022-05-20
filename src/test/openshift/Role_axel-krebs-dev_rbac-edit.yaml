@@ -1,0 +1,25 @@
+apiVersion: authorization.openshift.io/v1
+kind: Role
+metadata:
+  annotations:
+    toolchain.dev.openshift.com/last-applied-configuration: '{"apiVersion":"rbac.authorization.k8s.io/v1","kind":"Role","metadata":{"labels":{"toolchain.dev.openshift.com/owner":"axel-krebs","toolchain.dev.openshift.com/provider":"codeready-toolchain"},"name":"rbac-edit","namespace":"axel-krebs-dev"},"rules":[{"apiGroups":["authorization.openshift.io","rbac.authorization.k8s.io"],"resources":["roles","rolebindings"],"verbs":["get","list","watch","create","update","patch","delete"]}]}'
+  labels:
+    toolchain.dev.openshift.com/owner: axel-krebs
+    toolchain.dev.openshift.com/provider: codeready-toolchain
+  name: rbac-edit
+rules:
+- apiGroups:
+  - authorization.openshift.io
+  - rbac.authorization.k8s.io
+  attributeRestrictions: null
+  resources:
+  - rolebindings
+  - roles
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch

@@ -1,0 +1,44 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  annotations:
+    app.openshift.io/vcs-ref: ""
+    app.openshift.io/vcs-uri: https://github.com/axel-krebs/timefox-backend-polyglott.git
+    openshift.io/generated-by: OpenShiftWebConsole
+  labels:
+    app: timefox-backend-polyglott-git
+    app.kubernetes.io/component: timefox-backend-polyglott-git
+    app.kubernetes.io/instance: timefox-backend-polyglott-git
+    app.kubernetes.io/name: timefox-backend-polyglott-git
+    app.kubernetes.io/part-of: timefox-backend-polyglott-git-app
+  name: timefox-backend-polyglott-git
+spec:
+  failedBuildsHistoryLimit: 5
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: timefox-backend-polyglott-git:latest
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    contextDir: /
+    git:
+      uri: https://github.com/axel-krebs/timefox-backend-polyglott.git
+    type: Git
+  strategy:
+    dockerStrategy:
+      dockerfilePath: Dockerfile
+    type: Docker
+  successfulBuildsHistoryLimit: 5
+  triggers:
+  - generic:
+      secretReference:
+        name: timefox-backend-polyglott-git-generic-webhook-secret
+    type: Generic
+  - github:
+      secretReference:
+        name: timefox-backend-polyglott-git-github-webhook-secret
+    type: GitHub
+  - type: ConfigChange

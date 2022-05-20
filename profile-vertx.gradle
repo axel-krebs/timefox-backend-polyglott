@@ -13,12 +13,11 @@ buildscript {
 		gradlePluginPortal()
     }
     dependencies {
-		classpath "com.palantir.gradle.docker:gradle-docker:0.33.0"
+		//
 	}
 }
 
 apply plugin: 'tecfox.java-conventions'
-//apply plugin: 'com.palantir.docker'
 
 dependencies {
 
@@ -26,8 +25,10 @@ dependencies {
 	//	exclude group: "org.slf4j", module: "slf4j-api"
 	//}
 	implementation "io.vertx:vertx-core:$vertxVersion"
+	implementation "io.vertx:vertx-config:$vertxVersion"
 	implementation "io.vertx:vertx-web:$vertxVersion"
 	implementation "io.vertx:vertx-web-openapi:$vertxVersion"
+	implementation "io.vertx:vertx-web-proxy:$vertxVersion"
 	
 	implementation("org.slf4j:slf4j-api:$slf4jVersion")
 	
@@ -54,13 +55,3 @@ tasks.withType(GroovyCompile) {
 tasks.withType(Test) {
     useJUnitPlatform()
 }
-
-//docker {
-//    name "tecfox.eu/timefox:${project.version}"
-//   files file("build/distributions/timefox-backend-polyglott-${project.version}.tar.gz"), 'install.sh'
-//    buildArgs([ZIP_FILE_NAME: "timefox-backend-polyglott-${project.version}.tar.gz", APP_USER: 'vertx', PASS_WORD: 'tecfox#007'])
-//    labels(['version': "${project.version}"])
-    //load
-//}
-
-//docker.dependsOn assemble

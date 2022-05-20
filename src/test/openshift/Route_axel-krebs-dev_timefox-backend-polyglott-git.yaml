@@ -1,0 +1,23 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+    openshift.io/host.generated: "true"
+  labels:
+    app: timefox-backend-polyglott-git
+    app.kubernetes.io/component: timefox-backend-polyglott-git
+    app.kubernetes.io/instance: timefox-backend-polyglott-git
+    app.kubernetes.io/name: timefox-backend-polyglott-git
+    app.kubernetes.io/part-of: timefox-backend-polyglott-git-app
+  name: timefox-backend-polyglott-git
+spec:
+  port:
+    targetPort: 8080-tcp
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: timefox-backend-polyglott-git
+    weight: 100
+  wildcardPolicy: None
