@@ -1,0 +1,47 @@
+buildscript {
+	ext {
+		//
+	}
+	dependencies {
+		classpath "com.palantir.gradle.docker:gradle-docker:0.33.0"
+	}
+}
+
+plugins {
+	id 'java-library'
+	id 'application'
+}
+
+apply plugin: 'com.palantir.docker'
+
+apply from: "../profile-vertx.gradle"
+
+version theVersion
+
+jar {
+	baseName = 'timefox-vertx-router'
+	manifest {
+		attributes["Manifest-Version"] = '1.0'
+		attributes["Main-Class"] = 'io.vertx.core.Launcher'
+		attributes["Main-Verticle"] = 'eu.tecfox.timefox.app.router.TimeFoxHttpRouterVerticle'
+	}
+}
+
+application {
+    mainClass = 'io.vertx.core.Launcher'
+}
+
+tasks.withType(Tar) {
+    compression = Compression.GZIP
+	archiveExtension = "tar.gz"
+}
+
+docker {
+	name "tecfox.eu/timefox-router:${project.version}"
+   	files file("build/distributions/timefox-vertx-router-${project.version}.tar.gz"), 'install.sh'
+    buildArgs([ZIP_FILE_NAME: "timefox-vertx-router-${project.version}.tar.gz", APP_USER: 'vertx', PASS_WORD: 'tecfox#007'])
+    labels(['version': "${project.version}"])
+    //load
+}
+
+docker.dependsOn assemble

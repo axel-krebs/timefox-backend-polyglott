@@ -10,22 +10,12 @@ buildscript {
     }
 	dependencies {
 		classpath "com.github.node-gradle:gradle-node-plugin:3.2.1" // TODO: move to conventions plugin
-		classpath "com.palantir.gradle.docker:gradle-docker:0.33.0"
 	}
 }
 
 plugins {
-	id 'application'
-	id 'distribution'
-	//id 'tecfox.java-conventions' // draws in 'java-library', which is not wanted in root project!
 	id 'tecfox.node-conventions'
 }
-
-// Apply the 'profile' ..
-if (!hasProperty('buildProfile')) ext.buildProfile = 'default'
-apply from: "profile-${buildProfile}.gradle"
-
-apply plugin: 'com.palantir.docker'
 
 ext {
 	apiVersion = 'v1.0' // Should reflect the version of the API
@@ -34,6 +24,13 @@ ext {
 }
 
 version ext.apiVersion
+
+allprojects {
+    repositories {
+    	mavenCentral()
+    	gradlePluginPortal()
+    }
+}
 
 // 'yarn_cache_clean' is defined in tecfox.node-conventions.gradle; pls. exec this task 
 // prior to running the yarn tasks, because author did not have time..
@@ -108,13 +105,3 @@ task yarn_generate_client_graphql(type: YarnTask, dependsOn: ['yarn','copy_apifi
 	description = 'Generate the client code (TS)'
 	args = ['run', 'generate-client-graphql']
 }
-
-docker {
-    name "tecfox.eu/timefox:${project.version}"
-   files file("build/distributions/timefox-backend-polyglott-${project.version}.tar.gz"), 'install.sh'
-    buildArgs([ZIP_FILE_NAME: "timefox-backend-polyglott-${project.version}.tar.gz", APP_USER: 'vertx', PASS_WORD: 'tecfox#007'])
-    labels(['version': "${project.version}"])
-    //load
-}
-
-docker.dependsOn assemble

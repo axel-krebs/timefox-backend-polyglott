@@ -1,0 +1,1 @@
+put the compiled static web application in this place

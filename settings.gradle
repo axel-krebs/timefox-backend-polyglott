@@ -8,3 +8,4 @@
  */
 
 rootProject.name = 'timefox-backend-polyglott'
+include 'pipes:timefox-vertx-gateway','pipes:timefox-vertx-router'

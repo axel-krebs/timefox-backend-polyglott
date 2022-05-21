@@ -1,0 +1,98 @@
+services:
+  timefox-gateway-1:
+    image: tecfox/nginx:0.0.1-SNAPSHOT
+    container_name: timefox-Gateway-1
+    links:
+    - syracom-web-1
+    - syracom-web-2
+    - syracom-service-1
+    - syracom-service-2
+    - syracom-service-3
+    - postgres-1
+    - postgres-2
+    ports:
+    - 8080:8080
+    - 8081:8081
+    networks:
+      syracom_net:
+        ipv4_address: 123.123.123.101
+  timefox-service-1:
+    image: tecfox/vertx:0.0.1-SNAPSHOT
+    container_name: timefox-Vertx-1
+    ports:
+    - 8101:8080
+    networks:
+      syracom_net:
+        ipv4_address: 123.123.123.111
+        aliases:
+        - vertx111
+  syracom-service-2:
+    image: syracom/vertx:0.0.1-SNAPSHOT
+    container_name: syracom-Vertx-2
+    ports:
+    - 8102:8080
+    networks:
+      syracom_net:
+        ipv4_address: 123.123.123.112
+        aliases:
+        - vertx112
+  syracom-service-3:
+    image: syracom/vertx:0.0.1-SNAPSHOT
+    container_name: syracom-Vertx-3
+    ports:
+    - 8103:8080
+    networks:
+      syracom_net:
+        ipv4_address: 123.123.123.113
+        aliases:
+        - vertx113
+  syracom-web-1:
+    image: syracom/wildfly:0.0.1-SNAPSHOT
+    container_name: syracom-Wildfly-1
+    ports:
+    - 8201:8080
+    - 9991:9990
+    networks:
+      syracom_net:
+        ipv4_address: 123.123.123.121
+        aliases:
+        - wildfly121
+  syracom-web-2:
+    image: syracom/wildfly:0.0.1-SNAPSHOT
+    container_name: syracom-Wildfly-2
+    ports:
+    - 8202:8080
+    - 9992:9990
+    networks:
+      syracom_net:
+        ipv4_address: 123.123.123.122
+        aliases:
+        - wildfly122
+  postgres-1:
+    image: syracom/postgres:0.0.1-SNAPSHOT
+    container_name: syracom-Postgres-1
+    ports:
+    - 5433:5432
+    networks:
+      syracom_net:
+        ipv4_address: 123.123.123.201
+        aliases:
+        - postgres201
+  postgres-2:
+    image: syracom/postgres:0.0.1-SNAPSHOT
+    container_name: syracom-Postgres-2
+    ports:
+    - 5434:5432
+    networks:
+      syracom_net:
+        ipv4_address: 123.123.123.202
+        aliases:
+        - postgres202
+networks:
+  syracom_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 123.123.123.0/24
+        gateway: 123.123.123.1

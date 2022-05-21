@@ -5,19 +5,12 @@ buildscript {
 		junitVersion = '5.8.1'
 		mockitoVersion = '4.5.1'
 	}
-	repositories {
-        mavenCentral()
-        maven { 
-			url "https://plugins.gradle.org/m2/" 
-		}
-		gradlePluginPortal()
-    }
     dependencies {
 		//
 	}
 }
 
-apply plugin: 'tecfox.java-conventions'
+apply plugin: 'java-library'
 
 dependencies {
 
@@ -26,6 +19,7 @@ dependencies {
 	//}
 	implementation "io.vertx:vertx-core:$vertxVersion"
 	implementation "io.vertx:vertx-config:$vertxVersion"
+	implementation "io.vertx:vertx-config-yaml:$vertxVersion"
 	implementation "io.vertx:vertx-web:$vertxVersion"
 	implementation "io.vertx:vertx-web-openapi:$vertxVersion"
 	implementation "io.vertx:vertx-web-proxy:$vertxVersion"
