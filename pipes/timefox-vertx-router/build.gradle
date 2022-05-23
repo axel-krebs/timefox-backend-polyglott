@@ -14,7 +14,7 @@ plugins {
 
 apply plugin: 'com.palantir.docker'
 
-apply from: "../profile-vertx.gradle"
+apply from: "../profile-vertx-java.gradle"
 
 version = project.property('apiVersion')
 

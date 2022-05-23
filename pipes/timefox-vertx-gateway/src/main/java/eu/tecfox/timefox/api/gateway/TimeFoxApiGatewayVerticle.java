@@ -6,8 +6,10 @@ import org.slf4j.LoggerFactory;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.openapi.OpenAPILoaderOptions;
 import io.vertx.ext.web.openapi.RouterBuilder;
@@ -29,6 +31,8 @@ public class TimeFoxApiGatewayVerticle extends AbstractVerticle {
 	/* The OpenApi YAML file; must be on classpath */
 	private static final String CLIENT_API_YAML_FILE = "api/v1.0/client-na.yaml";
 
+	private static final String RANGE_LOAD_GET_SERVICE = "timefox.range-load-get";
+
 	HttpServer server;
 	ServiceBinder serviceBinder;
 
@@ -38,24 +42,40 @@ public class TimeFoxApiGatewayVerticle extends AbstractVerticle {
 		startHttpServing(this.vertx);
 	}
 
-	private void deployServices(Vertx vx) {
+	private void deployServices(final Vertx vtx) {
 		
 	}
 
-	private Future<Void> startHttpServing(Vertx vx) {
+	private Future<Void> startHttpServing(final Vertx vtx) {
 		OpenAPILoaderOptions loadOpts = new OpenAPILoaderOptions();
-		return RouterBuilder.create(vx, CLIENT_API_YAML_FILE, loadOpts).onFailure(Throwable::printStackTrace)
+		return RouterBuilder.create(vtx, CLIENT_API_YAML_FILE, loadOpts).onFailure(Throwable::printStackTrace)
 				.compose(routerBuilder -> {
 
-					// Mounting services on event bus based on extensions would imply to add the
-					// 'x-vertx-event-bus' annotation to the YAML file, which is not wanted now. 
+					// Mounting services on the eventbus based on extensions would imply to add the
+					// 'x-vertx-event-bus' annotation to the YAML file, which is not wanted here.
 					// routerBuilder.mountServicesFromExtensions();
 
 					// Generate the router
 					Router router = routerBuilder.createRouter();
-					
-					
-					
+
+					router.get("/loadRange/{startDate}/{endDate}").handler(ctx -> {
+						JsonObject params = new JsonObject();
+
+						Object startDate = ctx.request().getParam("startDate");
+						Object endDate = ctx.request().getParam("endDate");
+						
+						params.put("startDate", startDate);
+						params.put("endDate", endDate);
+
+						DeliveryOptions options = new DeliveryOptions().addHeader("action", "load");
+
+						vertx.eventBus().request(RANGE_LOAD_GET_SERVICE, params, options).onSuccess(msg -> {
+							
+						}).onFailure(err -> {
+							// failure
+						});
+					});
+
 					router.errorHandler(400, ctx -> {
 						LOG.debug("Bad Request", ctx.failure());
 					});
@@ -67,7 +87,7 @@ public class TimeFoxApiGatewayVerticle extends AbstractVerticle {
 
 	@Override
 	public void stop() throws Exception {
-
+		
 	}
 
 }

@@ -22,6 +22,33 @@ dependencies {
 	// any?
 }
 
+ext {
+	genJavaDir = "${projectDir}/src/generated/java"
+}
+
+sourceSets {
+    generated {
+        java.srcDir genJavaDir
+    }
+}
+
+tasks.withType(JavaCompile) {
+	source += sourceSets.generated.java
+    configure(options) {
+        forkOptions.jvmArgs = ['-Xmx1024m']
+        warnings = true
+    }
+    destinationDir = file("${projectDir}/src/generated/java")
+}
+
+clean {
+	doLast {
+		def tree = fileTree(genJavaDir)
+		tree.include '**'
+		tree.each { it.delete() }
+	}
+}
+
 checkstyle {
     toolVersion '7.8.1'
     configFile rootProject.file("config/checkstyle/checkstyle.xml")
@@ -33,7 +60,7 @@ checkstyle {
 }
 
 checkstyleMain {
-    source ='src/main/java'
+    source = 'src/main/java'
 }
 
 checkstyleTest {

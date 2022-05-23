@@ -5,6 +5,8 @@ buildscript {
 		logbackVersion = '1.2.11'
 		junitVersion = '5.8.1'
 		mockitoVersion = '4.5.1'
+		jacksonVertxKotlinVersion = '2.13.3'
+		kotlinxVersion = '1.6.1'
 	}
     dependencies {
 		//
@@ -23,11 +25,17 @@ dependencies {
 	implementation "io.vertx:vertx-config:$vertxVersion"
 	implementation "io.vertx:vertx-config-yaml:$vertxVersion"
 	implementation "io.vertx:vertx-lang-kotlin:$vertxVersion"
+	implementation "io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion"
 	implementation "io.vertx:vertx-service-proxy:$vertxVersion"
 	implementation "io.vertx:vertx-web:$vertxVersion"
 	implementation "io.vertx:vertx-web-api-service:$vertxVersion"
 	implementation "io.vertx:vertx-web-openapi:$vertxVersion"
 	implementation "io.vertx:vertx-web-proxy:$vertxVersion"
+	
+	implementation "io.vertx:vertx-codegen:$vertxVersion"
+	
+	implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxVersion"
+	implementation "com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonVertxKotlinVersion}"
 	
 	implementation("org.slf4j:slf4j-api:$slf4jVersion")
 	implementation("ch.qos.logback:logback-classic:$logbackVersion")

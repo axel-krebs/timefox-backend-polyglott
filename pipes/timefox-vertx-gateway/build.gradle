@@ -11,19 +11,19 @@ plugins {
 
 apply plugin: 'com.palantir.docker'
 
-apply from: "../profile-vertx.gradle"
+apply from: "../profile-vertx-java.gradle"
 
 version = project.property('apiVersion')
 
-task copy_api_files(type: Copy) {
+task clean_api_files {
+	file("${project.projectDir}/src/main/resources/api/${apiVersion}").deleteDir()
+}
+
+task copy_api_files(type: Copy, dependsOn: clean_api_files) {
 	group 'build'
 	from "${project.rootDir}/src/main/resources/api/${apiVersion}"
 	include "*"
 	into "${project.projectDir}/src/main/resources/api/${apiVersion}"
-}
-
-clean.doLast {
-	file("${project.projectDir}/src/main/resources/api/${apiVersion}").deleteDir()
 }
 
 jar {

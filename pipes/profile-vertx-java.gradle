@@ -1,0 +1,61 @@
+buildscript {
+	ext {
+		vertxVersion = '4.2.7'
+		slf4jVersion = '1.7.36'
+		logbackVersion = '1.2.11'
+		junitVersion = '5.8.1'
+		mockitoVersion = '4.5.1'
+	}
+    dependencies {
+		//
+	}
+}
+
+apply plugin: 'java-library'
+apply plugin: 'tecfox.java-conventions'
+
+dependencies {
+
+	//api("io.vertx:vertx-stack-depchain:$vertxVersion"){
+	//	exclude group: "org.slf4j", module: "slf4j-api"
+	//}
+	implementation "io.vertx:vertx-core:$vertxVersion"
+	implementation "io.vertx:vertx-config:$vertxVersion"
+	implementation "io.vertx:vertx-config-yaml:$vertxVersion"
+	implementation "io.vertx:vertx-service-proxy:$vertxVersion"
+	implementation "io.vertx:vertx-web:$vertxVersion"
+	implementation "io.vertx:vertx-web-api-service:$vertxVersion"
+	implementation "io.vertx:vertx-web-openapi:$vertxVersion"
+	implementation "io.vertx:vertx-web-proxy:$vertxVersion"
+	implementation "io.vertx:vertx-codegen:$vertxVersion"
+	annotationProcessor "io.vertx:vertx-codegen:$vertxVersion"
+	annotationProcessor "io.vertx:vertx-service-proxy:$vertxVersion"
+	
+	implementation("org.slf4j:slf4j-api:$slf4jVersion")
+	implementation("ch.qos.logback:logback-classic:$logbackVersion")
+	
+	testImplementation("io.vertx:vertx-junit5:$vertxVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
+	testImplementation "org.mockito:mockito-core:$mockitoVersion"
+  	testImplementation("io.vertx:vertx-web-client:$vertxVersion")
+}
+
+task generate_proxies(type: JavaCompile) {
+    description 'Generates the Vert.x proxies'
+    source = sourceSets.main.java
+    classpath = configurations.compileClasspath + configurations.annotationProcessor
+    options.annotationProcessorPath = configurations.annotationProcessor
+    options.compilerArgs = [
+            "-proc:only",
+            "-processor", "io.vertx.codegen.CodeGenProcessor",
+            "-Acodegen.output=${projectDir}/src/main"
+    ]
+}
+
+compileJava {
+	dependsOn generate_proxies
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+}
