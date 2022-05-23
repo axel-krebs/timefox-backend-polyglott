@@ -3,6 +3,7 @@ package eu.tecfox.timefox.app.router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
@@ -27,7 +28,7 @@ public class TimeFoxHttpRouterVerticle extends AbstractVerticle {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TimeFoxHttpRouterVerticle.class);
 
-	private static final String YAML_FILE = "timefox-vertx.yaml";
+	private static final String YAML_FILE = "router-vertx.yaml";
 
 	private static final String HTTP_PORT_KEY = "http";
 
@@ -53,14 +54,14 @@ public class TimeFoxHttpRouterVerticle extends AbstractVerticle {
 			if (configFuture.succeeded()) {
 				JsonObject jsonConfig = configFuture.result();
 				Router router = Router.router(vertx);
-				JsonObject tfConfig = jsonConfig.getJsonObject("timefox");
+				JsonObject tfConfig = jsonConfig.getJsonObject("server");
 
-				boolean useGateway = createHandlers(router, tfConfig);
+				createHandlers(router, tfConfig);
 
 				// check config??
 				JsonObject routerConf = tfConfig.getJsonObject("router");
 				Integer httpPort = routerConf.getInteger(HTTP_PORT_KEY);
-				HttpServerOptions httpOpts = createDefaultConfig(useGateway);
+				HttpServerOptions httpOpts = createDefaultConfig(false);
 				setHttpOptions(httpOpts, routerConf);
 
 				vertx.createHttpServer(httpOpts).requestHandler(router).listen(httpPort);
@@ -91,15 +92,13 @@ public class TimeFoxHttpRouterVerticle extends AbstractVerticle {
 				new PemKeyCertOptions().setKeyPath("tls/server-key.pem").setCertPath("tls/server-cert.pem"));
 	}
 
-	private boolean createHandlers(Router router, JsonObject tfConfig) {
+	private void createHandlers(Router router, JsonObject tfConfig) {
 		createRootContextHandler(router);
 		createStaticRoutes(router);
 		JsonObject tfGatewayConf = tfConfig.getJsonObject("gateway");
 		if (null != tfGatewayConf) {
 			createApiGatewayRoute(router, tfGatewayConf);
-			return true;
 		}
-		return false;
 	}
 
 	/*
@@ -111,17 +110,29 @@ public class TimeFoxHttpRouterVerticle extends AbstractVerticle {
 			ctx.response().putHeader("Content-Type", "text/json")
 					.end("{message: \"Hello, you've called the root context.\"}");
 		});
+
+		// handle illegal requests
+		router.post().handler(ctx -> {
+			ctx.response().putHeader("HTTP-Status", HttpResponseStatus.BAD_REQUEST.reasonPhrase());
+		});
 	}
 
 	/*
 	 * Deliver the HTML/JavaScript.
 	 */
 	private void createStaticRoutes(Router router) {
-		router.get("/app*").handler(ctx -> {
-			if (ctx.request().path().equals("/")) {
+
+		router.route("/app/*").handler(ctx -> {
+
+			// respect root context..
+			if (ctx.request().path().equals("/app/")) {
 				ctx.response().sendFile("jsapp/index.html");
 			} else {
-				ctx.response().sendFile("jsapp" + ctx.request().path());
+
+				// ..everything after the 4th character must be request for static content!
+				String path = ctx.request().path();
+				String reqContent = path.substring(4, path.length());
+				ctx.response().sendFile("jsapp" + reqContent);
 			}
 		});
 	}

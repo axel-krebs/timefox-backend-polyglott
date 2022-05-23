@@ -1,7 +1,4 @@
 buildscript {
-	ext {
-		//
-	}
 	dependencies {
 		classpath "com.palantir.gradle.docker:gradle-docker:0.33.0"
 	}
@@ -16,9 +13,21 @@ apply plugin: 'com.palantir.docker'
 
 apply from: "../profile-vertx.gradle"
 
-version theVersion
+version = project.property('apiVersion')
+
+task copy_api_files(type: Copy) {
+	group 'build'
+	from "${project.rootDir}/src/main/resources/api/${apiVersion}"
+	include "*"
+	into "${project.projectDir}/src/main/resources/api/${apiVersion}"
+}
+
+clean.doLast {
+	file("${project.projectDir}/src/main/resources/api/${apiVersion}").deleteDir()
+}
 
 jar {
+	from copy_api_files
 	baseName = 'timefox-vertx-gateway'
 	manifest {
 		attributes["Manifest-Version"] = '1.0'

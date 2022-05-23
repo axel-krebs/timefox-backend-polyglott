@@ -10,7 +10,7 @@ plugins {
 	id 'idea'
 }
 
-group = 'eu.tecfox.poc'
+group = 'eu.tecfox.java'
 version = '1.0'
 
 // Question: is it desirable to have a global JDK version, or should profiles define one for themselves?

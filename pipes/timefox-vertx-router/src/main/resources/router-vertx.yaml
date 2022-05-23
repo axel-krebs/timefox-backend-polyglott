@@ -1,4 +1,4 @@
-timefox:
+server:
     router:
       http: 8080
       https: 8443
@@ -6,6 +6,5 @@ timefox:
       http: 8081
       https: 8443
       host: localhost
-      route: "/api/{version}/*"
+      route: "/api/*"
       accept-backlog: 1
-            

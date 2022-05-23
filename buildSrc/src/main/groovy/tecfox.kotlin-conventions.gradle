@@ -1,0 +1,12 @@
+/**
+ * Custom Kotlin conventions for Gradle builds. Note: gradlePluginPortal() repository must be given in root buildscript of the project!
+ * 
+ * Copyright TecFox GmbH, 2022.
+ */
+ plugins {
+ 	id 'org.jetbrains.kotlin.jvm'
+ }
+ 
+group = 'eu.tecfox.kotlin'
+version = '1.0'
+

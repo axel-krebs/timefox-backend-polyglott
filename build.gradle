@@ -1,15 +1,13 @@
 // Assembles a Vertx deployment
 buildscript {
-	ext {
-		//
-	}
     repositories {
         mavenCentral()
 		// Wermutstropfen: die Plugins können nicht in die einzelnen Profile verlagert werden..
 		gradlePluginPortal()
     }
 	dependencies {
-		classpath "com.github.node-gradle:gradle-node-plugin:3.2.1" // TODO: move to conventions plugin
+		classpath "com.github.node-gradle:gradle-node-plugin:$nodeVersion" // TODO: move to conventions plugin
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 	}
 }
 
@@ -18,7 +16,6 @@ plugins {
 }
 
 ext {
-	apiVersion = 'v1.0' // Should reflect the version of the API
 	jsonSchemaFilePath = 'webapp/dist/timefox-client.json'
 	apiFilePath = "src/main/resources/api/${project.version}/"
 }
