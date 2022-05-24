@@ -145,11 +145,11 @@ public class EntityServiceVertxProxyHandler extends ProxyHandler {
           break;
         }
         case "createRecord": {
-          service.createRecord(json.getJsonObject("entity") != null ? new eu.tecfox.timefox.api.services.Entity((JsonObject)json.getJsonObject("entity")) : null);
+          service.createRecord((io.vertx.core.json.JsonObject)json.getValue("entity"));
           break;
         }
         case "updateRecord": {
-          service.updateRecord(json.getJsonObject("entity") != null ? new eu.tecfox.timefox.api.services.Entity((JsonObject)json.getJsonObject("entity")) : null);
+          service.updateRecord((io.vertx.core.json.JsonObject)json.getValue("entity"));
           break;
         }
         default: throw new IllegalStateException("Invalid action: " + action);

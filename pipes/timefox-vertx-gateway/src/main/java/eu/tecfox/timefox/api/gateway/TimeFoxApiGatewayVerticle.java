@@ -3,23 +3,21 @@ package eu.tecfox.timefox.api.gateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.tecfox.timefox.api.services.Entity;
+import eu.tecfox.timefox.api.services.EntityService;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.openapi.OpenAPILoaderOptions;
 import io.vertx.ext.web.openapi.RouterBuilder;
-import io.vertx.serviceproxy.ServiceBinder;
 
 /**
- * Das "API-Gateway"; enthält keine 'main' Methode, ergo muss es von einem
- * Installationsskript 'deployt' werden. Die 'Services' werden in diesem Fall
- * direkt im Vertx 'event-bus' registriert; eine 'distributed' Lösung wäre auch
- * möglich, s. Vertx docs.
+ * Das 'Gateway'-Verticle;
  * 
  * @author akrebs
  *
@@ -28,22 +26,17 @@ public class TimeFoxApiGatewayVerticle extends AbstractVerticle {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TimeFoxApiGatewayVerticle.class);
 
-	/* The OpenApi YAML file; must be on classpath */
-	private static final String CLIENT_API_YAML_FILE = "api/v1.0/client-na.yaml";
+	/* The OpenApi YAML file; must be on classpath! */
+	private static final String CLIENT_API_YAML_FILE = "client-na.yaml";
 
-	private static final String RANGE_LOAD_GET_SERVICE = "timefox.range-load-get";
+	private EntityService entityService;
 
 	HttpServer server;
-	ServiceBinder serviceBinder;
 
 	@Override
 	public void start() throws Exception {
-		deployServices(this.vertx);
+		entityService = EntityService.createProxy(this.vertx, EntityService.VERTX_EVENTBUS_ADDRESS);
 		startHttpServing(this.vertx);
-	}
-
-	private void deployServices(final Vertx vtx) {
-		
 	}
 
 	private Future<Void> startHttpServing(final Vertx vtx) {
@@ -54,40 +47,52 @@ public class TimeFoxApiGatewayVerticle extends AbstractVerticle {
 					// Mounting services on the eventbus based on extensions would imply to add the
 					// 'x-vertx-event-bus' annotation to the YAML file, which is not wanted here.
 					// routerBuilder.mountServicesFromExtensions();
+					// Instead, define the routes programmatically:
 
-					// Generate the router
 					Router router = routerBuilder.createRouter();
+					
+					router.get("/").handler(ctx -> {
+						ctx.end("{\"message\": \"You called the root context!\"}");
+					});
 
 					router.get("/loadRange/{startDate}/{endDate}").handler(ctx -> {
 						JsonObject params = new JsonObject();
-
 						Object startDate = ctx.request().getParam("startDate");
 						Object endDate = ctx.request().getParam("endDate");
-						
+
 						params.put("startDate", startDate);
 						params.put("endDate", endDate);
 
-						DeliveryOptions options = new DeliveryOptions().addHeader("action", "load");
-
-						vertx.eventBus().request(RANGE_LOAD_GET_SERVICE, params, options).onSuccess(msg -> {
-							
-						}).onFailure(err -> {
-							// failure
+						entityService.loadRange(params, handler -> {
+							Entity res = handler.result();
+							writeEntityResponse(ctx, res);
 						});
 					});
 
 					router.errorHandler(400, ctx -> {
 						LOG.debug("Bad Request", ctx.failure());
 					});
-					server = vertx.createHttpServer(new HttpServerOptions().setPort(8080).setHost("localhost"))
+					server = vertx.createHttpServer(new HttpServerOptions())
 							.requestHandler(router);
-					return server.listen().mapEmpty();
+					return server.listen(8080).mapEmpty();
 				});
+	}
+
+	// Uh, this is still not async.. ?
+	private void writeEntityResponse(RoutingContext ctx, Entity res) {
+		ctx.addHeadersEndHandler(heh -> {
+			ctx.response().setStatusCode(200);
+			ctx.response().headers().add("Content-Type", "application/json");
+		});
+		ctx.addBodyEndHandler(beh -> {
+			res.toJson().toString();
+		});
+		ctx.next();
 	}
 
 	@Override
 	public void stop() throws Exception {
-		
+
 	}
 
 }

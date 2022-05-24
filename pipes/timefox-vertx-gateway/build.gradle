@@ -5,7 +5,6 @@ buildscript {
 }
 
 plugins {
-	id 'java-library'
 	id 'application'
 }
 
@@ -31,9 +30,13 @@ jar {
 	baseName = 'timefox-vertx-gateway'
 	manifest {
 		attributes["Manifest-Version"] = '1.0'
-		attributes["Main-Class"] = 'io.vertx.core.Launcher'
-		attributes["Main-Verticle"] = 'eu.tecfox.timefox.gateway.TimeFoxApiGatewayVerticle'
+		attributes["Main-Class"] = 'eu.tecfox.timefox.api.gateway.Application'
 	}
+}
+
+application {
+	mainClass = 'eu.tecfox.timefox.api.gateway.Application'
+	// TODO: Use Java module system
 }
 
 tasks.withType(Tar) {
@@ -42,7 +45,7 @@ tasks.withType(Tar) {
 }
 
 docker {
-	name "tecfox.eu/timefox:${project.version}"
+	name "tecfox.eu/timefox-gateway:${project.version}"
    	files file("build/distributions/timefox-vertx-gateway-${project.version}.tar.gz"), 'install.sh'
     buildArgs([ZIP_FILE_NAME: "timefox-vertx-gateway-${project.version}.tar.gz", APP_USER: 'vertx', PASS_WORD: 'tecfox#007'])
     labels(['version': "${project.version}"])

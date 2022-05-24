@@ -102,20 +102,20 @@ public class EntityServiceVertxEBProxy implements EntityService {
     });
   }
   @Override
-  public void createRecord(Entity entity){
+  public void createRecord(JsonObject entity){
     if (closed) throw new IllegalStateException("Proxy is closed");
     JsonObject _json = new JsonObject();
-    _json.put("entity", entity != null ? entity.toJson() : null);
+    _json.put("entity", entity);
 
     DeliveryOptions _deliveryOptions = (_options != null) ? new DeliveryOptions(_options) : new DeliveryOptions();
     _deliveryOptions.addHeader("action", "createRecord");
     _vertx.eventBus().send(_address, _json, _deliveryOptions);
   }
   @Override
-  public void updateRecord(Entity entity){
+  public void updateRecord(JsonObject entity){
     if (closed) throw new IllegalStateException("Proxy is closed");
     JsonObject _json = new JsonObject();
-    _json.put("entity", entity != null ? entity.toJson() : null);
+    _json.put("entity", entity);
 
     DeliveryOptions _deliveryOptions = (_options != null) ? new DeliveryOptions(_options) : new DeliveryOptions();
     _deliveryOptions.addHeader("action", "updateRecord");

@@ -17,7 +17,7 @@ RUN ["/bin/bash","-c","echo $(./install.sh ${USER_NAME} ${PASS_WORD} ${ZIP_FILE_
 USER ${USER_NAME}
 
 # Since Docker does not persist configurations while creating the image, the PATH set in .bashrc must be sourced
-ENTRYPOINT ["/bin/bash","-c","cd && source .bashrc && exec timefox-backend-polyglott run eu.tecfox.timefox.server.TimeFoxHttpRouterVerticle"]
+ENTRYPOINT ["/bin/bash","-c","cd && source .bashrc && exec timefox-vertx-gateway"]
 #CMD ["/bin/bash","-c","cd && source .bashrc && echo $PATH & tail -f /dev/null"]
 
 EXPOSE 8080 8443

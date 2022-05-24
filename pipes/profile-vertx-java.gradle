@@ -14,6 +14,16 @@ buildscript {
 apply plugin: 'java-library'
 apply plugin: 'tecfox.java-conventions'
 
+ext {
+	genJavaDir = "${projectDir}/src/generated/java"
+}
+
+sourceSets {
+    generated {
+        java.srcDir genJavaDir
+    }
+}
+
 dependencies {
 
 	//api("io.vertx:vertx-stack-depchain:$vertxVersion"){
@@ -48,14 +58,23 @@ task generate_proxies(type: JavaCompile) {
     options.compilerArgs = [
             "-proc:only",
             "-processor", "io.vertx.codegen.CodeGenProcessor",
-            "-Acodegen.output=${projectDir}/src/main"
+            "-Acodegen.output=$genJavaDir"
     ]
+    destinationDir = file(genJavaDir)
 }
 
-compileJava {
+compileJava { 
+	source += file(genJavaDir) // must
 	dependsOn generate_proxies
 }
 
+clean {
+	doLast {
+		def tree = fileTree(genJavaDir)
+		tree.include '**'
+		tree.each { it.delete() }
+	}
+}
 tasks.withType(Test) {
     useJUnitPlatform()
 }

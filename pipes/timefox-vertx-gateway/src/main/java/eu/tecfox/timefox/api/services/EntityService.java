@@ -12,6 +12,11 @@ import io.vertx.core.json.JsonObject;
 public interface EntityService {
 
 	/**
+	 * Address used by provider and consumer.
+	 */
+	static final String VERTX_EVENTBUS_ADDRESS = "timefox.entity-service";
+
+	/**
 	 * This method loads an array of TimeRecord objects in the given range.
 	 * 
 	 * @param startDate
@@ -34,7 +39,7 @@ public interface EntityService {
 	 * @param entity S. definition in Java file: @DataObject
 	 * @return
 	 */
-	void createRecord(Entity entity);
+	void createRecord(JsonObject entity);
 
 	/**
 	 * Update an entity inclusive TimeRecords.
@@ -42,13 +47,15 @@ public interface EntityService {
 	 * @param entity
 	 * @return
 	 */
-	void updateRecord(Entity entity);
+	void updateRecord(JsonObject entity);
 
 	/**
-	 * Vertx method. 
+	 * Vertx method. EntityServiceVertxEBProxy generated source by @ProxyGen, must
+	 * run first.
+	 * 
 	 * @param vertx
 	 * @param address
-	 * @return
+	 * @return EntityServiceVertxEBProxy
 	 */
 	static EntityService createProxy(Vertx vertx, String address) { // (5)
 		return new EntityServiceVertxEBProxy(vertx, address);
