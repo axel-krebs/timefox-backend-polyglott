@@ -10,7 +10,7 @@ public class EntityServiceImpl implements EntityService {
 
 	@Override
 	public void loadRange(JsonObject startAndEndDate, Handler<AsyncResult<Entity>> result) {
-
+		
 	}
 
 	@Override

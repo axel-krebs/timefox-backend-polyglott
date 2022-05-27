@@ -50,7 +50,7 @@ public class TimeFoxApiGatewayVerticle extends AbstractVerticle {
 					// Instead, define the routes programmatically:
 
 					Router router = routerBuilder.createRouter();
-					
+
 					router.get("/").handler(ctx -> {
 						ctx.end("{\"message\": \"You called the root context!\"}");
 					});
@@ -64,6 +64,9 @@ public class TimeFoxApiGatewayVerticle extends AbstractVerticle {
 						params.put("endDate", endDate);
 
 						entityService.loadRange(params, handler -> {
+							if (handler.failed()) {
+								writeError(ctx, handler.cause());
+							}
 							Entity res = handler.result();
 							writeEntityResponse(ctx, res);
 						});
@@ -72,10 +75,19 @@ public class TimeFoxApiGatewayVerticle extends AbstractVerticle {
 					router.errorHandler(400, ctx -> {
 						LOG.debug("Bad Request", ctx.failure());
 					});
-					server = vertx.createHttpServer(new HttpServerOptions())
-							.requestHandler(router);
+					server = vertx.createHttpServer(new HttpServerOptions()).requestHandler(router);
 					return server.listen(8080).mapEmpty();
 				});
+	}
+
+	private void writeError(RoutingContext ctx, Throwable cause) {
+		ctx.addEndHandler(heh -> {
+			ctx.response().setStatusCode(500);
+			ctx.response().headers().add("Content-Type", "application/json");
+		});
+		ctx.addBodyEndHandler(beh -> {
+			ctx.end("{\"message\": \"An error occurred! " + cause.getMessage() + "\"}");
+		});
 	}
 
 	// Uh, this is still not async.. ?
@@ -92,7 +104,9 @@ public class TimeFoxApiGatewayVerticle extends AbstractVerticle {
 
 	@Override
 	public void stop() throws Exception {
-
+		
+		// destroy proxy
+		entityService = null;
 	}
 
 }
